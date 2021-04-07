@@ -1,0 +1,35 @@
+version: '3.1'
+
+services:
+
+  mysql-db:
+    image: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: dbTest
+    ports:
+      - 3308:3306
+    healthcheck:
+        test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+        timeout: 20s
+        retries: 10
+
+  web:
+    build: ./frontend
+    ports:
+      - 3000:80
+
+  server:
+    build: ./backend
+    depends_on:
+      mysql-db:
+        condition: service_healthy
+    ports:
+      - 3001:3001
+    environment:
+      - SERVER_PORT=3001
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-db:3306/dbTest?useSSL=false&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=123456

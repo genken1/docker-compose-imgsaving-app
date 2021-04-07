@@ -12,7 +12,6 @@ function App() {
   const [images, setImages] = useState([])
 
   useEffect(() => {
-    console.log("effect")
     setIsSent(false)
     setIsRemove(false)
     getImages()
